@@ -10,6 +10,9 @@ const AdminLoginForm = ({ onCancel }) => {
   const passwordInputRef = useRef();
   const navigate = useNavigate();
 
+  // Backend URL from .env
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const togglePasswordVisibility = () => {
     const input = passwordInputRef.current;
     input.type = input.type === "password" ? "text" : "password";
@@ -21,7 +24,7 @@ const AdminLoginForm = ({ onCancel }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/users/admin-login",
+        `${backendUrl}/users/admin-login`, // ✅ use backend URL env variable
         { password },
         {
           headers: { "Content-Type": "application/json" },
@@ -38,6 +41,8 @@ const AdminLoginForm = ({ onCancel }) => {
       setTimeout(() => setError(""), 3000);
     } catch (error) {
       console.error(error);
+      setError("An error occurred while logging in.");
+      setTimeout(() => setError(""), 3000);
     }
   };
 

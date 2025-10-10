@@ -9,19 +9,29 @@ const Caraousel = () => {
   const [books, setBooks] = useState([]);
   const [message, setMessage] = useState("");
 
+  // Use backend URL from environment variable
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get("http://localhost:3000/books/get-books");
+      try {
+        const res = await axios.get(`${backendUrl}/books/get-books`, {
+          withCredentials: true,
+        });
 
-      if (res.status === 200) {
-        setBooks(res.data);
-      } else {
-        setMessage("Books Not Found");
+        if (res.status === 200) {
+          setBooks(res.data);
+        } else {
+          setMessage("Books Not Found");
+        }
+      } catch (error) {
+        setMessage("Error fetching books");
+        console.error(error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [backendUrl]);
 
   const settings = {
     dots: true,

@@ -3,36 +3,46 @@ import BookTableRow from "../components/BookTableRow";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+// Use the backend URL from environment variables
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const DeletePage = () => {
   const [books, setBooks] = useState([]);
   const [message, setMessage] = useState("");
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:3000/books/delete/${id}`
-      );
+      const res = await axios.delete(`${backendUrl}/books/delete/${id}`, {
+        withCredentials: true, // if using cookies for auth
+      });
       if (res.status === 200) {
         toast.success(res.data.msg);
-        setBooks(res.data.books);
+        setBooks(Array.isArray(res.data.books) ? res.data.books : []);
       } else {
-        toast.error(res.data.msg);
+        toast.error(res.data.msg || "Delete failed");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Error deleting book");
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/books/get-books");
-        if (res.status === 200) {
+        const res = await axios.get(`${backendUrl}/books/get-books`, {
+          withCredentials: true, // if using cookies for auth
+        });
+
+        if (res.status === 200 && Array.isArray(res.data)) {
           setBooks(res.data);
         } else {
+          setBooks([]);
           setMessage("Books Not Found");
         }
       } catch (error) {
+        console.error(error);
+        setBooks([]);
         setMessage("Error fetching books");
       }
     };
@@ -64,8 +74,8 @@ const DeletePage = () => {
               />
             ))
           ) : (
-            <tr className="text-red-500 dark:bg-slate-900  text-2xl text-center">
-              <th>{message}</th>
+            <tr className="text-red-500 dark:bg-slate-900 text-2xl text-center">
+              <td colSpan={6}>{message}</td>
             </tr>
           )}
         </tbody>

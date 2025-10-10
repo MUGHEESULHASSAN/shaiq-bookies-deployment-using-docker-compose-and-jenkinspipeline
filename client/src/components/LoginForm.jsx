@@ -11,6 +11,9 @@ const LoginForm = ({ onCancel }) => {
   const passwordInputRef = useRef();
   const navigate = useNavigate();
 
+  // Get backend URL from .env
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const togglePasswordVisibility = () => {
     const input = passwordInputRef.current;
     input.type = input.type === "password" ? "text" : "password";
@@ -22,7 +25,7 @@ const LoginForm = ({ onCancel }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/users/login",
+        `${backendUrl}/users/login`,
         { username, password },
         {
           headers: { "Content-Type": "application/json" },
@@ -39,6 +42,8 @@ const LoginForm = ({ onCancel }) => {
       setTimeout(() => setError(""), 3000);
     } catch (error) {
       console.error(error);
+      setError("Network error, please try again.");
+      setTimeout(() => setError(""), 3000);
     }
   };
 

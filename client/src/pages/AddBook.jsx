@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -11,13 +10,14 @@ const AddBook = () => {
   const [price, setPrice] = useState("Free");
 
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL; // ✅ Backend URL from .env
 
   const submitForm = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/books/add-book",
+        `${backendUrl}/books/add-book`, // use env variable
         {
           title,
           category,
@@ -25,7 +25,7 @@ const AddBook = () => {
           price,
         },
         {
-          withCredentials: true,
+          withCredentials: true, // only if your backend uses cookies
         }
       );
 
@@ -40,6 +40,7 @@ const AddBook = () => {
       }
     } catch (error) {
       toast.error("An error occurred: " + error.message);
+      console.error(error);
     }
   };
 
@@ -52,6 +53,7 @@ const AddBook = () => {
               Add Book
             </h2>
 
+            {/* Category */}
             <div className="mb-4">
               <label htmlFor="category" className="block font-bold mb-2">
                 Book Category
@@ -62,33 +64,32 @@ const AddBook = () => {
                 className="border rounded w-full py-2 px-3 bg-white dark:bg-slate-900"
                 required
                 value={category}
-                onChange={(event) => {
-                  setCategory(event.target.value);
-                }}
+                onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="Full-Time">Story Book</option>
-                <option value="Part-Time">Science Fiction Book</option>
-                <option value="Remote">Health Book</option>
-                <option value="Internship">Programming Book</option>
-                <option value="Internship">Travel Book</option>
+                <option value="Story Book">Story Book</option>
+                <option value="Science Fiction Book">Science Fiction Book</option>
+                <option value="Health Book">Health Book</option>
+                <option value="Programming Book">Programming Book</option>
+                <option value="Travel Book">Travel Book</option>
               </select>
             </div>
 
+            {/* Title */}
             <div className="mb-4">
               <label className="block font-bold mb-2">Book Name</label>
               <input
-                category="text"
+                type="text"
                 id="title"
                 name="title"
                 className="border rounded w-full py-2 px-3 mb-2 bg-white dark:bg-slate-900"
-                placeholder="eg. Raodmap to Full Stack"
+                placeholder="e.g., Roadmap to Full Stack"
                 required
                 value={title}
-                onChange={(event) => {
-                  setTitle(event.target.value);
-                }}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
+
+            {/* Description */}
             <div className="mb-4">
               <label htmlFor="description" className="block font-bold mb-2">
                 Description
@@ -98,16 +99,15 @@ const AddBook = () => {
                 name="description"
                 className="border rounded w-full py-2 px-3 bg-white dark:bg-slate-900"
                 rows="4"
-                placeholder="Add any job duties, expectations, requirements, etc"
+                placeholder="Add any book details, summary, or description"
                 value={description}
-                onChange={(event) => {
-                  setDescription(event.target.value);
-                }}
+                onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
 
+            {/* Price */}
             <div className="mb-4">
-              <label htmlFor="category" className="block font-bold mb-2">
+              <label htmlFor="price" className="block font-bold mb-2">
                 Price
               </label>
               <select
@@ -116,21 +116,19 @@ const AddBook = () => {
                 className="border rounded w-full py-2 px-3 bg-white dark:bg-slate-900"
                 required
                 value={price}
-                onChange={(event) => {
-                  setPrice(event.target.value);
-                }}
+                onChange={(e) => setPrice(e.target.value)}
               >
                 <option value="Free">Free</option>
-                <option value="$50K - 60K">$10</option>
-                <option value="$60K - 70K">$15</option>
-                <option value="$70K - 80K">$20</option>
+                <option value="$10">$10</option>
+                <option value="$15">$15</option>
+                <option value="$20">$20</option>
               </select>
             </div>
 
             <div>
               <button
+                type="submit"
                 className="bg-primary-red hover:bg-red-500 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
-                category="submit"
               >
                 Add Book
               </button>

@@ -11,10 +11,13 @@ const Books = () => {
   const [paid, setPaid] = useState(false);
   const [free, setFree] = useState(false);
 
+  // Use environment variable
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/books/get-books");
+        const res = await axios.get(`${backendUrl}/get-books`); // use backend URL from env
         if (res.status === 200) {
           setBooks(res.data);
         } else {
@@ -26,17 +29,15 @@ const Books = () => {
     };
 
     fetchData();
-  }, []);
+  }, [backendUrl]);
 
-  const handleDropdown = () => {
-    setShowFilter(!showFilter);
-  };
+  const handleDropdown = () => setShowFilter(!showFilter);
 
   const filteredBooks = books.filter((book) => {
-    if (free && paid) return true; // Show all books if both are selected
+    if (free && paid) return true;
     if (free) return book.price === "Free";
     if (paid) return book.price !== "Free";
-    return true; // Show all books if no filter is selected
+    return true;
   });
 
   return (

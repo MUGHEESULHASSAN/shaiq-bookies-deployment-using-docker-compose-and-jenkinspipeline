@@ -16,8 +16,11 @@ const Navbar = () => {
     localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
   );
 
+  // Backend URL from .env
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
-    let element = document.documentElement;
+    const element = document.documentElement;
     if (theme === "dark") {
       element.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -30,26 +33,22 @@ const Navbar = () => {
   useEffect(() => {
     const authenticate = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/users/authenticate",
-          {
-            withCredentials: true,
-          }
-        );
+        const res = await axios.get(`${backendUrl}/users/authenticate`, {
+          withCredentials: true,
+        });
         if (res.data.isAuthenticated) {
           setLoggedIn(true);
-          console.log("Authenticated");
         } else {
           setLoggedIn(false);
-          console.log("Not authenticated");
         }
       } catch (error) {
         console.error(error);
+        setLoggedIn(false);
       }
     };
 
     authenticate();
-  });
+  }, [backendUrl]);
 
   const handleClick = () => {
     setShowLoginModel(true);
@@ -69,7 +68,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:3000/users/logout",
+        `${backendUrl}/users/logout`,
         {},
         {
           withCredentials: true,
@@ -78,7 +77,7 @@ const Navbar = () => {
       if (res.data.loggedOut) {
         onCancelLogout();
         setLoggedIn(false);
-        return navigate("/");
+        navigate("/");
       }
     } catch (error) {
       console.error(error);
@@ -86,68 +85,41 @@ const Navbar = () => {
   };
 
   return (
-    <header className="text-gray-600 bg-white  dark:bg-slate-900 dark:text-white body-font shadow-lg">
+    <header className="text-gray-600 bg-white dark:bg-slate-900 dark:text-white body-font shadow-lg">
       <div className="container mx-auto flex flex-wrap px-5 py-4 flex-col md:flex-row justify-between items-center">
         <NavLink
           to="/"
-          className="flex title-font font-medium items-center  ml-5 mb-4 md:mb-0"
+          className="flex title-font font-medium items-center ml-5 mb-4 md:mb-0"
         >
           <FaBookOpen className="text-2xl text-primary-red" />
           <span className="ml-3 text-primary-red text-2xl">Bookies</span>
         </NavLink>
         <div className="flex flex-col items-center md:flex-row md:gap-72">
           <nav className="md:ml-auto mr-8 flex gap-10 flex-wrap items-center text-base justify-center">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "relative  after:absolute after:left-0 after:bottom-[-4px] after:w-full after:h-[2px] after:bg-primary-red"
-                  : "hover:border-b-2 hover:border-primary-red transition-all duration-300"
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/books"
-              className={({ isActive }) =>
-                isActive
-                  ? "relative  after:absolute after:left-0 after:bottom-[-4px] after:w-full after:h-[2px] after:bg-primary-red"
-                  : "hover:border-b-2 hover:border-primary-red transition-all duration-300"
-              }
-            >
-              Books
-            </NavLink>
-            <NavLink
-              to="/contact"
-              className={({ isActive }) =>
-                isActive
-                  ? "relative  after:absolute after:left-0 after:bottom-[-4px] after:w-full after:h-[2px] after:bg-primary-red"
-                  : "hover:border-b-2 hover:border-primary-red transition-all duration-300"
-              }
-            >
-              Contact
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "relative  after:absolute after:left-0 after:bottom-[-4px] after:w-full after:h-[2px] after:bg-primary-red"
-                  : "hover:border-b-2 hover:border-primary-red transition-all duration-300"
-              }
-            >
-              About
-            </NavLink>
+            {["/", "/books", "/contact", "/about"].map((path, idx) => {
+              const names = ["Home", "Books", "Contact", "About"];
+              return (
+                <NavLink
+                  key={idx}
+                  to={path}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "relative after:absolute after:left-0 after:bottom-[-4px] after:w-full after:h-[2px] after:bg-primary-red"
+                      : "hover:border-b-2 hover:border-primary-red transition-all duration-300"
+                  }
+                >
+                  {names[idx]}
+                </NavLink>
+              );
+            })}
           </nav>
           <div className="flex gap-2 justify-center items-center">
             <label className="swap swap-rotate mt-4 md:mt-0">
-              {/* this hidden checkbox controls the state */}
               <input
                 type="checkbox"
                 className="theme-controller"
                 value="dark"
               />
-
-              {/* moon icon */}
               <svg
                 className="swap-on h-8 w-8 fill-current"
                 xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +128,6 @@ const Navbar = () => {
               >
                 <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
               </svg>
-              {/* sun icon */}
               <svg
                 className="swap-off h-8 w-8 fill-current"
                 xmlns="http://www.w3.org/2000/svg"

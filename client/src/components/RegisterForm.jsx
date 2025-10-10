@@ -15,6 +15,9 @@ const RegisterForm = ({ onCancel }) => {
   const confirmPasswordInputRef = useRef();
   const navigate = useNavigate();
 
+  // Use backend URL from .env
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const togglePasswordVisibility = () => {
     const input = passwordInputRef.current;
     input.type = input.type === "password" ? "text" : "password";
@@ -50,7 +53,7 @@ const RegisterForm = ({ onCancel }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/users/register",
+        `${backendUrl}/users/register`,
         { email, username, password },
         {
           headers: { "Content-Type": "application/json" },
@@ -67,6 +70,8 @@ const RegisterForm = ({ onCancel }) => {
       setTimeout(() => setError(""), 3000);
     } catch (error) {
       console.error(error);
+      setError("An error occurred. Please try again.");
+      setTimeout(() => setError(""), 3000);
     }
   };
 
@@ -102,12 +107,12 @@ const RegisterForm = ({ onCancel }) => {
         />
         {!showPassword ? (
           <FaEye
-            className="absolute dark:text-black  right-2 top-3 hover:cursor-pointer"
+            className="absolute dark:text-black right-2 top-3 hover:cursor-pointer"
             onClick={togglePasswordVisibility}
           />
         ) : (
           <FaEyeSlash
-            className="absolute dark:text-black  right-2 top-3 hover:cursor-pointer"
+            className="absolute dark:text-black right-2 top-3 hover:cursor-pointer"
             onClick={togglePasswordVisibility}
           />
         )}
@@ -123,12 +128,12 @@ const RegisterForm = ({ onCancel }) => {
         />
         {!showConfirmPassword ? (
           <FaEye
-            className="absolute dark:text-black  right-2 top-3 hover:cursor-pointer"
+            className="absolute dark:text-black right-2 top-3 hover:cursor-pointer"
             onClick={toggleConfirmPasswordVisibility}
           />
         ) : (
           <FaEyeSlash
-            className="absolute dark:text-black  right-2 top-3 hover:cursor-pointer"
+            className="absolute dark:text-black right-2 top-3 hover:cursor-pointer"
             onClick={toggleConfirmPasswordVisibility}
           />
         )}
