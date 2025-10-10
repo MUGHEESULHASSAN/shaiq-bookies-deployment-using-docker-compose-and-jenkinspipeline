@@ -41,6 +41,10 @@ const app = express();
 // CORS (allow all origins for now)
 app.use(cors({ origin: '*', credentials: true }));
 
+app.get('/', (req, res) => {
+    res.status(200).send('Server is running');
+});
+
 // Middlewares
 app.use(logger('dev'));
 app.use(express.json());
